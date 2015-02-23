@@ -50,9 +50,21 @@ describe('Controller: MainCtrl', function () {
       $httpBackend.flush();
     
       var thingName = 'something new';
-      $httpBackend.expectPOST('/api/things').respond(200);
+      $httpBackend.expectPOST('/api/things', { name: thingName }).respond(200);
       $rootScope.newThing = thingName;
       $rootScope.addThing();
+      $httpBackend.flush();
+    });
+  });
+
+  describe('$scope.deleteThing', function () {
+    it('should make request to API', function () {
+      var controller = createController();
+      $httpBackend.flush();
+    
+      var thingId = $rootScope.awesomeThings[2];
+      $httpBackend.expectDELETE('/api/things/' + thingId._id).respond(200);
+      $rootScope.deleteThing(thingId);
       $httpBackend.flush();
     });
   });
