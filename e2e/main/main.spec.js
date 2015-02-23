@@ -13,4 +13,6 @@ describe('Main View', function() {
     expect(page.imgEl.getAttribute('src')).toMatch(/assets\/images\/yeoman.png$/);
     expect(page.imgEl.getAttribute('alt')).toBe('I\'m Yeoman');
   });
+
+  
 });

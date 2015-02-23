@@ -70,8 +70,13 @@ module.exports = function (grunt) {
         tasks: ['injector:css']
       },
       mochaTest: {
-        files: ['server/**/*.spec.js'],
-        tasks: ['env:test', 'mochaTest']
+        options: {
+          spawn: true,
+          interrupt: true,
+          debounceDelay: 250,
+        },
+        files: ['server/**/*.js'],
+        tasks: ['mochaTest']
       },
       jsTest: {
         files: [
@@ -427,15 +432,20 @@ module.exports = function (grunt) {
 
     // Test settings
     karma: {
+      options: {
+        configFile: 'karma.conf.js'
+      },
       unit: {
-        configFile: 'karma.conf.js',
-        singleRun: true
+      },
+      dev: {
+        autoWatch: true
       }
     },
 
     mochaTest: {
       options: {
-        reporter: 'spec'
+        reporter: 'spec',
+        clearRequireCache: true
       },
       src: ['server/**/*.spec.js']
     },
@@ -611,7 +621,7 @@ module.exports = function (grunt) {
       return grunt.task.run([
         'clean:server',
         'env:all',
-        'injector:sass', 
+        'injector:sass',
         'concurrent:test',
         'injector',
         'autoprefixer',
@@ -624,7 +634,7 @@ module.exports = function (grunt) {
         'clean:server',
         'env:all',
         'env:test',
-        'injector:sass', 
+        'injector:sass',
         'concurrent:test',
         'injector',
         'wiredep',
@@ -638,6 +648,27 @@ module.exports = function (grunt) {
       'test:server',
       'test:client'
     ]);
+  });
+
+  // Continuous testing
+  grunt.registerTask('ctest', function(target) {
+    if (target === 'server') {
+      return grunt.task.run([
+        'env:all',
+        'env:test',
+        'watch:mochaTest'
+      ]);
+    } else if (target === 'client') {
+      return grunt.task.run([
+        'clean:server',
+        'env:all',
+        'injector:sass',
+        'concurrent:test',
+        'injector',
+        'autoprefixer',
+        'karma:dev'
+      ]);
+    }
   });
 
   grunt.registerTask('build', [
